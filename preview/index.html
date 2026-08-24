@@ -1,0 +1,943 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AgriIntel AI — معاينة الواجهة</title>
+<style>
+  :root{
+    --primary:#1B8A4B; --primary-deep:#0E5C31; --leaf:#4CAF50; --sun:#EFA53B;
+    --sky:#2E86C1; --danger:#D24B3E; --warning:#E08E0B;
+    --bg:#F4F7F3; --card:#FFFFFF; --border:#E2E8E1; --subtle:#5D6B62; --strong:#15211A;
+    --chip:#F1F5F0;
+  }
+  .dark{
+    --bg:#0F1512; --card:#18201C; --border:#27312B; --subtle:#9BAAA1; --strong:#FFFFFF;
+    --chip:#1F2A24;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{
+    margin:0; background:#e7ece6; min-height:100vh;
+    font-family:"Segoe UI",system-ui,-apple-system,"Noto Sans Arabic",Tahoma,sans-serif;
+    display:flex; align-items:center; justify-content:center; gap:34px; padding:28px 18px; flex-wrap:wrap;
+  }
+  body.dark-page{background:#0a0f0c}
+
+  .phone{
+    width:392px; height:812px; background:var(--bg); border-radius:42px; position:relative;
+    box-shadow:0 0 0 11px #1c211e, 0 0 0 13px #33403a, 0 30px 70px rgba(0,0,0,.35);
+    overflow:hidden; display:flex; flex-direction:column; color:var(--strong);
+  }
+  .statusbar{
+    height:34px; flex:0 0 34px; display:flex; align-items:center; justify-content:space-between;
+    padding:0 24px; font-size:12px; font-weight:700; color:var(--strong); opacity:.85;
+  }
+  .screen{flex:1; overflow-y:auto; overflow-x:hidden; padding:0 18px 22px;}
+  .screen::-webkit-scrollbar{width:0}
+
+  .apbar{display:flex; align-items:center; gap:12px; padding:6px 0 14px; position:sticky; top:0; background:var(--bg); z-index:5}
+  .apbar h1{font-size:19px; margin:0; font-weight:800; flex:1}
+  .apbar .sub{font-size:11px; color:var(--subtle); font-weight:500}
+  .logo{
+    width:42px;height:42px;border-radius:13px;flex:0 0 42px;
+    background:linear-gradient(135deg,var(--leaf),var(--primary-deep));
+    display:flex;align-items:center;justify-content:center;font-size:20px;
+  }
+  .langbtn{
+    border:none;background:rgba(27,138,75,.10); color:var(--primary); font-weight:700; font-size:12.5px;
+    padding:9px 13px; border-radius:30px; cursor:pointer; display:flex; align-items:center; gap:6px; font-family:inherit;
+  }
+  .langbtn:hover{background:rgba(27,138,75,.18)}
+  .iconbtn{border:none;background:transparent;color:var(--subtle);cursor:pointer;font-size:17px;padding:6px}
+
+  .card{background:var(--card); border:1px solid var(--border); border-radius:20px; padding:16px; margin-bottom:12px}
+  .card.tap{cursor:pointer; transition:transform .12s ease}
+  .card.tap:active{transform:scale(.985)}
+  .sect{font-size:17px;font-weight:700;margin:22px 4px 10px;display:flex;align-items:center;justify-content:space-between}
+  .sect button{border:none;background:none;color:var(--primary);font-weight:700;font-size:13px;cursor:pointer;font-family:inherit}
+
+  .pill{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:30px;font-size:11.5px;font-weight:700;white-space:nowrap}
+  .row{display:flex;align-items:center;gap:12px}
+  .col{display:flex;flex-direction:column}
+  .grow{flex:1;min-width:0}
+  .muted{color:var(--subtle)}
+  .fs12{font-size:12px}.fs13{font-size:13px}.fs14{font-size:14px}
+  .lh{line-height:1.75}
+  .b7{font-weight:700}.b8{font-weight:800}
+
+  .sqicon{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:19px;flex:0 0 42px}
+  .statgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:14px;text-align:center}
+  .statgrid .sqicon{margin:0 auto 8px;width:38px;height:38px;border-radius:12px;font-size:17px}
+  .statgrid .v{font-size:15px;font-weight:700}
+  .statgrid .c{font-size:10.5px;color:var(--subtle);margin-top:2px}
+
+  .quick{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .quick .card{margin:0;text-align:center;padding:18px 10px}
+  .quick .sqicon{margin:0 auto 10px;width:46px;height:46px;border-radius:15px;font-size:21px}
+
+  .btn{
+    width:100%;border:none;border-radius:16px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;
+    font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;
+  }
+  .btn.p{background:var(--primary);color:#fff}
+  .btn.p:disabled{background:rgba(27,138,75,.35);cursor:default}
+  .btn.o{background:transparent;color:var(--primary);border:1px solid var(--border)}
+  .btn.w{background:transparent;color:var(--warning);border:1px solid var(--warning);padding:13px}
+  .btnrow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+  .chips{display:flex;gap:9px;overflow-x:auto;padding-bottom:6px;margin:0 -18px;padding-inline:18px}
+  .chips::-webkit-scrollbar{height:0}
+  .chip{
+    border:1px solid var(--border);background:var(--card);border-radius:30px;padding:9px 15px;font-size:13.5px;
+    font-weight:700;white-space:nowrap;cursor:pointer;display:flex;align-items:center;gap:7px;color:var(--strong);font-family:inherit
+  }
+  .chip.on{background:var(--primary);border-color:var(--primary);color:#fff}
+
+  .frame{
+    aspect-ratio:4/3;border:1px solid var(--border);border-radius:22px;background:var(--card);overflow:hidden;
+    display:flex;align-items:center;justify-content:center;flex-direction:column;position:relative;margin-bottom:16px;
+  }
+  .frame.on{border-color:var(--primary);border-width:1.6px}
+  .frame .ph{width:62px;height:62px;border-radius:20px;background:rgba(27,138,75,.10);display:flex;align-items:center;justify-content:center;font-size:27px;margin-bottom:14px}
+  .frame .cap{position:absolute;inset-inline:12px;top:12px;display:flex;justify-content:space-between}
+  .overlay{position:absolute;inset:0;background:rgba(0,0,0,.25)}
+
+  .steps div{display:flex;align-items:center;gap:12px;padding:7px 0;font-size:13.5px}
+  .dot{width:19px;height:19px;border-radius:50%;border:2px solid var(--border);flex:0 0 19px}
+  .dot.done{background:var(--primary);border-color:var(--primary);position:relative}
+  .dot.done::after{content:"✓";color:#fff;font-size:11px;position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+  .dot.act{border-color:var(--primary);border-inline-start-color:transparent;animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .bar{height:10px;border-radius:10px;overflow:hidden;background:rgba(27,138,75,.15)}
+  .bar > i{display:block;height:100%;border-radius:10px;transition:width .7s cubic-bezier(.2,.8,.2,1)}
+
+  .num{width:26px;height:26px;border-radius:9px;background:rgba(27,138,75,.12);color:var(--primary);
+       font-size:12.5px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:0 0 26px}
+
+  .bubble{max-width:82%;padding:13px 16px;border-radius:18px;font-size:13.5px;line-height:1.75;margin-bottom:12px;width:fit-content}
+  .bubble.bot{background:var(--card);border:1px solid var(--border);border-start-start-radius:4px}
+  .bubble.me{background:var(--primary);color:#fff;margin-inline-start:auto;border-end-end-radius:4px}
+  .bubble .who{font-size:11.5px;font-weight:700;color:var(--primary);margin-bottom:7px;display:flex;gap:6px;align-items:center}
+  .composer{display:flex;gap:8px;align-items:center;padding:10px 14px 14px;border-top:1px solid var(--border);background:var(--card)}
+  .composer input{
+    flex:1;border:none;background:var(--chip);border-radius:26px;padding:13px 16px;font-size:13.5px;
+    font-family:inherit;color:var(--strong);outline:none;min-width:0
+  }
+  .cbtn{width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;font-size:17px;flex:0 0 44px;display:flex;align-items:center;justify-content:center}
+  .cbtn.mic{background:rgba(27,138,75,.10)}
+  .cbtn.send{background:var(--primary);color:#fff}
+  .sugg{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .sugg button{border:1px solid var(--border);background:var(--card);color:var(--primary);border-radius:30px;
+    padding:10px 14px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit}
+
+  .bars{display:flex;align-items:flex-end;height:186px;gap:10px;padding:0 6px}
+  .bars .b{flex:1;display:flex;flex-direction:column;align-items:center;height:100%}
+  .bars .v{font-size:12px;font-weight:700;margin-bottom:6px}
+  .bars .fill{width:100%;border-radius:8px;margin-top:auto;transition:height .8s cubic-bezier(.2,.8,.2,1)}
+  .bars .l{font-size:11px;margin-top:8px;color:var(--subtle)}
+
+  .tabbar{
+    flex:0 0 70px;display:flex;background:var(--card);border-top:1px solid var(--border);
+  }
+  .tabbar button{
+    flex:1;border:none;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;gap:5px;color:var(--subtle);font-size:10.5px;font-weight:600;font-family:inherit;padding:0
+  }
+  .tabbar button.on{color:var(--primary)}
+  .tabbar .ind{padding:3px 16px;border-radius:20px;line-height:0}
+  .tabbar button.on .ind{background:rgba(27,138,75,.14)}
+  .tabbar svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+
+  .segs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:14px;position:sticky;top:0;background:var(--bg);z-index:4}
+  .segs button{flex:1;border:none;background:none;padding:12px 0;font-size:14px;font-weight:700;color:var(--subtle);
+    cursor:pointer;border-bottom:2px solid transparent;font-family:inherit}
+  .segs button.on{color:var(--primary);border-bottom-color:var(--primary)}
+
+  .toast{
+    position:absolute;inset-inline:20px;bottom:88px;background:#222b26;color:#fff;padding:13px 16px;border-radius:12px;
+    font-size:12.5px;opacity:0;transform:translateY(8px);transition:.25s;pointer-events:none;z-index:20
+  }
+  .toast.on{opacity:1;transform:none}
+  .sheet{position:absolute;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:flex-end;z-index:30}
+  .sheet > div{background:var(--card);width:100%;border-radius:24px 24px 0 0;padding:34px 24px;text-align:center}
+  .sheet .mic{width:78px;height:78px;border-radius:50%;background:rgba(27,138,75,.12);display:flex;align-items:center;
+    justify-content:center;font-size:32px;margin:0 auto 18px}
+  .prog{height:4px;background:rgba(27,138,75,.15);border-radius:4px;overflow:hidden;margin-top:20px}
+  .prog i{display:block;height:100%;width:40%;background:var(--primary);animation:slide 1.1s ease-in-out infinite}
+  @keyframes slide{0%{margin-inline-start:-40%}100%{margin-inline-start:100%}}
+
+  .side{width:290px;color:#2c3a32;font-size:13px;line-height:1.85}
+  .dark-page .side{color:#b9c7bf}
+  .side h2{font-size:16px;margin:0 0 10px}
+  .side ul{padding-inline-start:18px;margin:0 0 16px}
+  .side .k{background:#fff;border:1px solid #d8e0d6;border-radius:12px;padding:12px 14px;margin-bottom:10px}
+  .dark-page .side .k{background:#141a17;border-color:#27312B}
+  .side code{background:rgba(0,0,0,.06);padding:2px 6px;border-radius:5px;font-size:12px}
+  .dark-page .side code{background:rgba(255,255,255,.08)}
+  .side .toggle{border:1px solid #cfd9cd;background:#fff;border-radius:10px;padding:9px 12px;cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:600}
+  .dark-page .side .toggle{background:#141a17;border-color:#27312B;color:#b9c7bf}
+</style>
+</head>
+<body>
+
+<div class="phone" id="phone">
+  <div class="statusbar"><span id="clock">9:41</span><span>▪ ▪ ▪ 🔋</span></div>
+  <div class="screen" id="screen"></div>
+  <div id="composer"></div>
+  <nav class="tabbar" id="tabbar"></nav>
+  <div class="toast" id="toast"></div>
+  <div id="sheet"></div>
+</div>
+
+<aside class="side">
+  <h2>AgriIntel AI — معاينة الواجهة</h2>
+  <div class="k">دي نسخة HTML بتحاكي تطبيق الـ Flutter بنفس التصميم والبيانات، علشان تشوف الشغل من غير ما تسطّب Flutter.
+  التطبيق الحقيقي في مجلد <code>lib/</code>.</div>
+  <b>جرّب كده:</b>
+  <ul>
+    <li>زرار <b>English/العربية</b> فوق — الواجهة كلها بتتقلب RTL/LTR.</li>
+    <li>تبويب <b>التشخيص</b> ← اختار <b>قمح</b> ← صوّر ← حلّل، هتشوف مسار "الثقة المنخفضة" وطلب مراجعة خبير.</li>
+    <li>تبويب <b>المساعد</b> ← اضغط أي سؤال جاهز، أو جرّب الميكروفون.</li>
+    <li>من نتيجة التشخيص: <b>احفظ في السجل</b> ← هتلاقيها في الرئيسية والحساب.</li>
+  </ul>
+  <button class="toggle" onclick="toggleDark()">🌙 جرّب الوضع الليلي</button>
+</aside>
+
+<script>
+/* ============================ STRINGS ============================ */
+const T = {
+  ar:{
+    'app.name':'أجري إنتل','app.tagline':'ذكاء اصطناعي في جيبك — لكل فدان','common.switchLang':'English',
+    'common.soon':'في المرحلة الجاية','common.demo':'نسخة تجريبية — البيانات هنا بيانات توضيحية.',
+    'onb.title':'قرارات أذكى،<br>من الموبايل اللي معاك',
+    'onb.subtitle':'شخّص أمراض النبات من صورة، واسأل مساعد ذكاء اصطناعي بالعربي، وخطّط للري والمحصول والبيع. من غير حساسات ولا درونز ولا أجهزة إضافية.',
+    'onb.f1':'تشخيص المرض من صورة ورقة واحدة','onb.f2':'مساعد بالعربي بيرد في ثواني',
+    'onb.f3':'توقّع المحصول وجدول الري','onb.f4':'أسعار لحظية وربط بالمشترين','onb.cta':'يلا نبدأ',
+    'nav.home':'الرئيسية','nav.diagnose':'التشخيص','nav.assistant':'المساعد','nav.insights':'التحليلات','nav.market':'السوق',
+    'dash.greeting':'صباح الخير يا {name}','dash.weather':'الجو النهارده في الأرض','dash.temp':'الحرارة','dash.humidity':'الرطوبة',
+    'dash.wind':'الرياح','dash.rain':'احتمال المطر','dash.actions':'مهام النهارده','dash.quick':'اختصارات سريعة',
+    'dash.recent':'آخر التشخيصات','dash.empty':'لسه مفيش تشخيصات — صوّر أول ورقة.','dash.market':'نظرة على السوق','dash.viewAll':'الكل',
+    'badge.now':'دلوقتي','badge.today':'النهارده','badge.week':'الأسبوع ده',
+    'act.irrigate.title':'اسقي القطعة A بالليل','act.irrigate.body':'محتاجة ٣٨ مم. أنسب وقت من ٦ لـ ٩ مساءً، لما البخر يقل.',
+    'act.spray.title':'أجّل الرش بكرة','act.spray.body':'الرياح ٢٤ كم/س هتشتت الرش. يوم الأربع الجو هادي.',
+    'act.sell.title':'أسعار الطماطم طالعة','act.sell.body':'زادت ٦.٤٪ الأسبوع ده. الاستنى ٥ أيام كمان غالبًا في مصلحتك.',
+    'diag.title':'تشخيص النبات','diag.crop':'اختار المحصول','diag.capture':'ضيف صورة للورقة المصابة','diag.camera':'الكاميرا',
+    'diag.gallery':'الاستوديو','diag.demoNote':'نسخة تجريبية — بنستخدم صورة ورقة جاهزة بدل الكاميرا.','diag.tips':'علشان النتيجة تطلع أدق',
+    'diag.tip1':'خلي الورقة مالية الصورة.','diag.tip2':'صوّر في ضوء النهار وابعد عن الظل القوي.','diag.tip3':'ظهّر الجزء السليم جنب الجزء المصاب.',
+    'diag.analyze':'حلّل الصورة','diag.retake':'غيّر الصورة','diag.s1':'بنرفع الصورة…','diag.s2':'بنشغّل نموذج الرؤية…','diag.s3':'بنجهّز خطة العلاج…',
+    'res.title':'نتيجة التشخيص','res.confidence':'نسبة الثقة','res.severity':'شدة الإصابة','sev.low':'خفيفة','sev.medium':'متوسطة','sev.high':'شديدة',
+    'res.about':'إيه المرض ده','res.treatment':'خطة العلاج','res.prevention':'الوقاية','res.lowTitle':'نتيجة ثقتها منخفضة',
+    'res.lowBody':'النموذج مش متأكد من الحالة دي. ابعتها لمهندس زراعي يراجعها.','res.expert':'اطلب مراجعة خبير',
+    'res.expertSent':'اتبعتت — مهندس زراعي هيرد خلال ٤ ساعات.','res.save':'احفظ في السجل','res.saved':'اتحفظت في السجل.','res.ask':'اسأل المساعد عنها',
+    'asst.title':'المساعد الزراعي','asst.subtitle':'إجاباته مبنية على قاعدة معرفة زراعية','asst.hint':'اسأل عن أي حاجة في زراعتك…',
+    'asst.greeting':'أهلًا بيك. أنا مساعدك الزراعي — اسألني عن الري أو التسميد أو الآفات أو مواعيد الزراعة.',
+    'asst.typing':'المساعد بيكتب…','asst.listening':'بسمعك…','asst.voiceNote':'إدخال صوتي (تجريبي)','asst.suggest':'جرّب تسأل',
+    'asst.escalate':'كلّم مهندس زراعي','asst.escalateBody':'مش متأكد من الإجابة دي. أبعتها لمهندس زراعي؟','asst.clear':'امسح',
+    'asst.q1':'أسقي الطماطم إمتى؟','asst.q2':'أسمّد بإيه وقت الإزهار؟','asst.q3':'أعالج الذبابة البيضاء إزاي؟','asst.q4':'الوقت مناسب للبيع؟',
+    'ins.title':'المحصول والري','ins.yield':'المحصول المتوقع','ins.unit':'طن / فدان','ins.range':'المدى المتوقع {a} – {b}','ins.season':'موسم ٢٠٢٦',
+    'ins.history':'المحصول عبر المواسم','ins.forecastTag':'متوقع','ins.irrigation':'جدول الري','ins.next':'الرية الجاية','ins.tonight':'الليلة، ٦–٩ مساءً',
+    'ins.skip':'مفيش ري','ins.mm':'مم','ins.weekWater':'مياه الأسبوع','ins.savedWater':'التوفير مقارنة بجدول ثابت',
+    'ins.note':'محسوبة من توقعات الطقس العامة ونماذج احتياج المحصول للمياه — من غير أي حساسات في الأرض.',
+    'mkt.title':'السوق','mkt.prices':'الأسعار','mkt.offers':'المشترين','mkt.today':'النهارده','mkt.trend':'آخر ٧ أيام','mkt.forecast':'الأسبوع الجاي',
+    'mkt.sell':'وقت كويس للبيع','mkt.hold':'الأفضل تستنى','mkt.perTon':'جنيه / طن','mkt.openOffers':'عروض شراء متاحة','mkt.grade':'الرتبة',
+    'mkt.qty':'الكمية','mkt.contact':'كلّم المشتري','mkt.gradeCta':'قيّم محصولي من صورة',
+    'mkt.gradeBody':'نموذج الرؤية بيصنّف جودة المحصول (أ / ب / ج) علشان تتفاوض من موقف أقوى.','mkt.ton':'طن',
+    'prof.title':'الحساب','prof.settings':'الإعدادات','prof.language':'اللغة','prof.theme':'الوضع الليلي','prof.history':'سجل التشخيصات',
+    'prof.about':'عن المشروع','prof.modules':'الوحدات','prof.stack':'التقنيات المستخدمة','prof.version':'الإصدار','prof.farmer':'المزارع',
+    'prof.aboutBody':'أجري إنتل منصة زراعية سوفتوير بالكامل: دعم قرار بالذكاء الاصطناعي للفلاح من غير حساسات ولا درونز ولا أجهزة IoT — بالموبايل اللي معاه بس.'
+  },
+  en:{
+    'app.name':'AgriIntel AI','app.tagline':'AI in your pocket — for every field','common.switchLang':'العربية',
+    'common.soon':'Planned for the next phase','common.demo':'Prototype — the data here is sample data.',
+    'onb.title':'Smarter decisions,<br>from the phone you already own',
+    'onb.subtitle':'Diagnose plant disease from a photo, ask an Arabic AI assistant, and plan irrigation, yield and sales. No sensors, no drones, no extra hardware.',
+    'onb.f1':'Disease diagnosis from a single leaf photo','onb.f2':'Arabic assistant that answers in seconds',
+    'onb.f3':'Yield forecast and irrigation schedule','onb.f4':'Live prices and buyer matching','onb.cta':'Get started',
+    'nav.home':'Home','nav.diagnose':'Diagnose','nav.assistant':'Assistant','nav.insights':'Insights','nav.market':'Market',
+    'dash.greeting':'Good morning, {name}','dash.weather':'Today at your farm','dash.temp':'Temperature','dash.humidity':'Humidity',
+    'dash.wind':'Wind','dash.rain':'Rain chance','dash.actions':"Today's actions",'dash.quick':'Quick actions',
+    'dash.recent':'Recent diagnoses','dash.empty':'No diagnoses yet — scan your first leaf.','dash.market':'Market snapshot','dash.viewAll':'View all',
+    'badge.now':'Now','badge.today':'Today','badge.week':'This week',
+    'act.irrigate.title':'Irrigate block A tonight','act.irrigate.body':'38 mm needed. Best window is 6–9 PM, when evaporation is lowest.',
+    'act.spray.title':'Hold off spraying tomorrow','act.spray.body':'Wind at 24 km/h will scatter the spray. Wednesday looks calm.',
+    'act.sell.title':'Tomato prices are trending up','act.sell.body':'Up 6.4% this week. Holding for about five more days is likely to pay off.',
+    'diag.title':'Plant diagnosis','diag.crop':'Pick the crop','diag.capture':'Add a photo of the affected leaf','diag.camera':'Camera',
+    'diag.gallery':'Gallery','diag.demoNote':'Demo build — a sample leaf image is used in place of the camera.','diag.tips':'For a more accurate result',
+    'diag.tip1':'Fill the frame with a single leaf.','diag.tip2':'Shoot in daylight and avoid hard shadows.','diag.tip3':'Include the healthy part next to the damaged part.',
+    'diag.analyze':'Analyze','diag.retake':'Change photo','diag.s1':'Uploading image…','diag.s2':'Running the vision model…','diag.s3':'Matching a treatment plan…',
+    'res.title':'Diagnosis result','res.confidence':'Confidence','res.severity':'Severity','sev.low':'Low','sev.medium':'Moderate','sev.high':'Severe',
+    'res.about':'What it is','res.treatment':'Treatment plan','res.prevention':'Prevention','res.lowTitle':'Low-confidence result',
+    'res.lowBody':'The model is not certain about this one. Send the case to an agronomist for review.','res.expert':'Request expert review',
+    'res.expertSent':'Sent — an agronomist will reply within 4 hours.','res.save':'Save to history','res.saved':'Saved to your history.','res.ask':'Ask the assistant about it',
+    'asst.title':'Agricultural assistant','asst.subtitle':'Answers grounded in an agricultural knowledge base','asst.hint':'Ask anything about your crop…',
+    'asst.greeting':'Hello. I am your farm assistant — ask me about irrigation, fertiliser, pests, or planting dates.',
+    'asst.typing':'Assistant is typing…','asst.listening':'Listening…','asst.voiceNote':'Voice input (demo)','asst.suggest':'Try asking',
+    'asst.escalate':'Talk to a human agronomist','asst.escalateBody':'I am not confident about this one. Should I forward it to an agronomist?','asst.clear':'Clear',
+    'asst.q1':'When do I irrigate the tomatoes?','asst.q2':'What fertiliser at flowering?','asst.q3':'How do I treat whitefly?','asst.q4':'Is this a good time to sell?',
+    'ins.title':'Yield & irrigation','ins.yield':'Expected yield','ins.unit':'ton / feddan','ins.range':'Likely range {a} – {b}','ins.season':'Season 2026',
+    'ins.history':'Yield across seasons','ins.forecastTag':'Forecast','ins.irrigation':'Irrigation schedule','ins.next':'Next irrigation','ins.tonight':'Tonight, 6–9 PM',
+    'ins.skip':'No irrigation','ins.mm':'mm','ins.weekWater':'Water this week','ins.savedWater':'Saved vs. fixed schedule',
+    'ins.note':'Built from public weather forecasts and crop water-requirement models — no field sensors required.',
+    'mkt.title':'Market','mkt.prices':'Prices','mkt.offers':'Buyers','mkt.today':'Today','mkt.trend':'7-day trend','mkt.forecast':'Next week',
+    'mkt.sell':'Good time to sell','mkt.hold':'Better to hold','mkt.perTon':'EGP / ton','mkt.openOffers':'Open buyer offers','mkt.grade':'Grade',
+    'mkt.qty':'Quantity','mkt.contact':'Contact buyer','mkt.gradeCta':'Grade my produce from a photo',
+    'mkt.gradeBody':'The vision model classifies produce quality (A / B / C) so you negotiate from a stronger position.','mkt.ton':'ton',
+    'prof.title':'Profile','prof.settings':'Settings','prof.language':'Language','prof.theme':'Dark mode','prof.history':'Diagnosis history',
+    'prof.about':'About this project','prof.modules':'Modules','prof.stack':'Technology stack','prof.version':'Version','prof.farmer':'Farmer',
+    'prof.aboutBody':'AgriIntel AI is a software-only AgriTech platform: AI decision support for farmers with no sensors, drones or IoT kits — only the smartphone they already own.'
+  }
+};
+
+/* ============================ DATA ============================ */
+const FARMER = {ar:'أحمد',en:'Ahmed'};
+const FARM   = {ar:'مزرعة النصر · البحيرة',en:'El-Nasr Farm · Beheira'};
+
+const CROPS = [
+  {id:'tomato', name:{ar:'طماطم',en:'Tomato'}, emoji:'🍅', color:'#D24B3E'},
+  {id:'potato', name:{ar:'بطاطس',en:'Potato'}, emoji:'🥔', color:'#B07A2E'},
+  {id:'wheat',  name:{ar:'قمح',en:'Wheat'},    emoji:'🌾', color:'#CB9B1E'},
+  {id:'maize',  name:{ar:'ذرة',en:'Maize'},    emoji:'🌽', color:'#7CA82B'},
+  {id:'citrus', name:{ar:'موالح',en:'Citrus'}, emoji:'🍊', color:'#E08E0B'},
+  {id:'grape',  name:{ar:'عنب',en:'Grapes'},   emoji:'🍇', color:'#7B4B94'}
+];
+
+const DISEASES = {
+  tomato:{name:{ar:'اللفحة المبكرة',en:'Early blight'},sci:'Alternaria solani',conf:.94,sev:1,
+    sum:{ar:'مرض فطري بيبدأ على الأوراق السفلية على شكل بقع بنية دايرية بحلقات جوّاها، وبيزيد مع الرطوبة العالية والحرارة من ٢٤ لـ ٢٩ درجة. لو اتساب بيوصل للساق والثمار ويقلل المحصول لحد ٣٠٪.',
+         en:'A fungal disease that starts on the lower leaves as brown circular lesions with concentric rings. It spreads under high humidity at 24–29 °C and can cut yield by up to 30%.'},
+    tr:[{ar:'شيل الأوراق المصابة واحرقها بعيد عن الأرض — متسبهاش بين الخطوط.',en:'Remove infected leaves and burn them away from the field.'},
+        {ar:'رش مبيد فطري نحاسي أو مانكوزيب كل ٧–١٠ أيام، ٣ رشات على الأقل.',en:'Spray a copper fungicide or mancozeb every 7–10 days, at least three applications.'},
+        {ar:'قلل الري بالرش من فوق وحوّل للتنقيط علشان الورق يفضل جاف.',en:'Cut overhead irrigation and switch to drip so the foliage stays dry.'},
+        {ar:'راقب النباتات المجاورة يوميًا لمدة أسبوعين بعد أول رشة.',en:'Check neighbouring plants daily for two weeks after the first spray.'}],
+    pr:[{ar:'دورة زراعية ٢–٣ سنين ومتزرعش طماطم ورا بطاطس.',en:'Rotate crops on a 2–3 year cycle; never plant tomato after potato.'},
+        {ar:'باعد بين النباتات علشان الهواء يعدي ويجفف الورق بسرعة.',en:'Space plants so air moves through the canopy.'},
+        {ar:'استخدم أصناف مقاومة وشتلات من مصدر موثوق.',en:'Use resistant varieties and trusted seedlings.'}]},
+  potato:{name:{ar:'اللفحة المتأخرة',en:'Late blight'},sci:'Phytophthora infestans',conf:.91,sev:2,
+    sum:{ar:'من أخطر أمراض البطاطس. بقع مائية غامقة بتكبر بسرعة وحواليها هالة بيضا تحت الورقة في الجو الرطب. بينتشر في أيام ويقدر يضيّع الحقل كله.',
+         en:'The most destructive potato disease. Dark water-soaked lesions expand fast with a white halo underneath. It can take a whole field within days.'},
+    tr:[{ar:'ابدأ رش وقائي فوري بمبيد جهازي (ميتالاكسيل + مانكوزيب).',en:'Start an immediate systemic spray programme (metalaxyl + mancozeb).'},
+        {ar:'اقطع الري تمامًا لمدة ٣ أيام وحسّن الصرف في الجور المصابة.',en:'Stop irrigation for three days and improve drainage.'},
+        {ar:'اقلع النباتات المصابة بجذورها وابعدها عن الأرض.',en:'Pull out infected plants with their roots.'},
+        {ar:'أجّل الحصاد أسبوعين بعد آخر رشة لحد ما القشرة تتماسك.',en:'Delay harvest two weeks after the last spray.'}],
+    pr:[{ar:'تقاوي معتمدة خالية من الإصابة وتخزين بارد جاف.',en:'Certified seed tubers and cool, dry storage.'},
+        {ar:'ترديم عالي على الخطوط علشان الدرنات متتعرضش للجراثيم.',en:'Hill the ridges high to protect the tubers.'},
+        {ar:'تابع تنبيهات الرطوبة — الخطر بيعلى فوق ٩٠٪ رطوبة.',en:'Watch humidity alerts — risk climbs above 90%.'}]},
+  wheat:{name:{ar:'الصدأ الأصفر (يحتاج تأكيد)',en:'Yellow rust (needs confirmation)'},sci:'Puccinia striiformis',conf:.58,sev:1,
+    sum:{ar:'الصورة بتوحي بخطوط صفرا برتقالية متوازية مع عروق الورقة، وده نمط الصدأ الأصفر. بس جودة الصورة والإضاءة خلت النموذج مش متأكد — ممكن يكون نقص عناصر أو أثر رش.',
+         en:'The image suggests yellow-orange stripes parallel to the leaf veins — the classic yellow-rust pattern. Image quality left the model uncertain; it could also be a nutrient deficiency or spray residue.'},
+    tr:[{ar:'ابعت الحالة لمهندس زراعي للمراجعة قبل أي رش.',en:'Send the case to an agronomist before spraying anything.'},
+        {ar:'صوّر ٣ ورقات تانية في ضوء النهار وأعد التحليل.',en:'Photograph three more leaves in daylight and re-run the analysis.'},
+        {ar:'لو اتأكد: رش تيبوكونازول في طور ظهور ورقة العلم.',en:'If confirmed: apply tebuconazole at the flag-leaf stage.'}],
+    pr:[{ar:'أصناف مقاومة وميعاد زراعة مبكر يقلل فترة التعرض.',en:'Resistant varieties and early sowing.'},
+        {ar:'متزودش التسميد الأزوتي — بيزوّد الإصابة.',en:'Avoid excess nitrogen — it increases infection.'}]},
+  maize:{name:{ar:'لفحة أوراق الذرة',en:'Northern leaf blight'},sci:'Exserohilum turcicum',conf:.88,sev:1,
+    sum:{ar:'بقع طويلة رمادية مايلة للبني شكلها زي السيجار على الأوراق، بتبدأ من تحت وتطلع لفوق، وبتقلل وزن الكيزان.',
+         en:'Long grey-brown cigar-shaped lesions moving from the lower leaves upward, cutting cob weight.'},
+    tr:[{ar:'رش مبيد فطري (أزوكسيستروبين) لو الإصابة قبل طور الحرير.',en:'Apply azoxystrobin if infection appears before silking.'},
+        {ar:'قلل كثافة الزراعة في الموسم الجاي لتحسين التهوية.',en:'Reduce plant density next season.'},
+        {ar:'ادفن بقايا المحصول بعد الحصاد بالحرث العميق.',en:'Bury crop residue with deep ploughing.'}],
+    pr:[{ar:'هجن مقاومة ودورة زراعية مع محصول مش نجيلي.',en:'Resistant hybrids and rotation with a non-grass crop.'},
+        {ar:'ري متوازن ومتسبش الأرض رطبة لفترة طويلة.',en:'Balanced irrigation; avoid long wet spells.'}]},
+  citrus:{name:{ar:'صانعة أنفاق الموالح',en:'Citrus leaf miner'},sci:'Phyllocnistis citrella',conf:.93,sev:0,
+    sum:{ar:'أنفاق فضية متعرجة جوه الورقة الحديثة مع التفاف في الحواف. الضرر الأكبر على الأشجار الصغيرة، وبيفتح الباب للتقرح الحمضي.',
+         en:'Silvery winding tunnels inside young leaves with curled edges. Worst on young trees, and it opens the door to citrus canker.'},
+    tr:[{ar:'رش زيت معدني صيفي ١٪ على الطرود الحديثة كل ١٠ أيام.',en:'Spray 1% summer mineral oil on new flush every 10 days.'},
+        {ar:'قص الطرود المصابة بشدة وتخلص منها.',en:'Prune heavily infested shoots.'},
+        {ar:'حافظ على الأعداء الحيوية ومتستخدمش مبيدات واسعة المدى.',en:'Protect natural enemies; avoid broad-spectrum insecticides.'}],
+    pr:[{ar:'وحّد مواعيد التسميد علشان الطرود تطلع مرة واحدة.',en:'Synchronise fertilisation so flush appears in one wave.'},
+        {ar:'مصايد فرمونية للمتابعة المبكرة.',en:'Pheromone traps for early monitoring.'}]},
+  grape:{name:{ar:'البياض الدقيقي',en:'Powdery mildew'},sci:'Erysiphe necator',conf:.90,sev:1,
+    sum:{ar:'طبقة بيضا زي البودرة على الأوراق والعناقيد، بتخلي الحبات تتشقق وتفقد قيمتها التسويقية. بينشط في الجو الدافي الجاف مع ظل كثيف.',
+         en:'A white powdery layer on leaves and clusters that cracks the berries. It thrives in warm dry weather with dense shade.'},
+    tr:[{ar:'كبريت ميكروني رشًا أو تعفيرًا في الصباح الباكر.',en:'Micronised sulphur early in the morning.'},
+        {ar:'خفّف الأوراق حوالين العناقيد علشان الشمس والهواء يوصلوا.',en:'Thin leaves around the clusters.'},
+        {ar:'كرر الرش كل ١٠–١٤ يوم لحد بداية التلوين.',en:'Repeat every 10–14 days until veraison.'}],
+    pr:[{ar:'تقليم شتوي منتظم وتربية تسمح بدخول الضوء.',en:'Regular winter pruning and a light-admitting canopy.'},
+        {ar:'رشة كبريت وقائية مع بداية النمو الخضري.',en:'A preventive sulphur spray at bud break.'}]}
+};
+
+const KB = [
+  {k:['ري','اسقي','أسقي','سقي','مياه','irrigat','water'],a:{
+    ar:'للطماطم في مرحلة الإثمار: رية كل ٣ أيام تقريبًا بمعدل ٣٥–٤٠ مم. الأفضل تسقي بعد المغرب علشان البخر يقل، ولو فيه مطر متوقع خلال ٢٤ ساعة أجّل الرية ووفّر المياه.',
+    en:'For tomato at fruiting stage: irrigate roughly every 3 days at 35–40 mm. Water after sunset to cut evaporation, and skip the round if rain is forecast within 24 hours.'}},
+  {k:['سماد','تسميد','أسمّد','إزهار','fertil','npk'],a:{
+    ar:'في النمو الخضري استخدم نسبة نيتروجين أعلى (٢٠-١٠-١٠)، ومع بداية الإزهار حوّل لـ (١٥-١٥-٣٠) علشان تدعم العقد وحجم الثمرة. قسّم الجرعة على مرتين، وضيف كالسيوم وبورون رشًا لتقليل عفن الطرف الزهري.',
+    en:'During vegetative growth use a higher nitrogen ratio (20-10-10); at flowering switch to 15-15-30 to support fruit set and size. Split the dose in two, and add foliar calcium and boron to limit blossom-end rot.'}},
+  {k:['لفحة','بقع','فطر','blight','spot','fungus'],a:{
+    ar:'البقع البنية الدايرية بحلقات على الأوراق السفلية غالبًا لفحة مبكرة. شيل الأوراق المصابة واحرقها، ورش مبيد فطري نحاسي كل ٧–١٠ أيام، وقلل الري من فوق. ولو البقع مائية غامقة وبتكبر بسرعة، دي لفحة متأخرة وبتحتاج تدخل فوري.',
+    en:'Brown circular lesions with rings on the lower leaves usually mean early blight. Remove and burn infected leaves, spray a copper fungicide every 7–10 days, and reduce overhead watering. Dark, fast-spreading water-soaked lesions mean late blight and need immediate action.'}},
+  {k:['ميعاد','مواعيد','زراعة','أزرع','شتل','plant','sow'],a:{
+    ar:'أنسب ميعاد لشتل الطماطم في الوجه البحري: العروة الصيفي من منتصف فبراير لنص مارس، والعروة الخريفي من يوليو لأغسطس. تجنب الشتل في موجة حر فوق ٣٨ درجة لأن العقد بيقل جدًا.',
+    en:'Best tomato transplanting window in the Nile Delta: mid-February to mid-March for the summer season, July to August for autumn. Avoid transplanting above 38 °C — fruit set drops sharply.'}},
+  {k:['ذبابة','حشرة','آفة','دودة','whitefly','pest','insect','aphid'],a:{
+    ar:'الذبابة البيضاء بتقعد تحت الأوراق. علّق مصايد صفرا لاصقة (١٠ للفدان)، ورش صابون زراعي أو زيت نيم كل ٥ أيام مع تغطية السطح السفلي للورق، وشيل الحشائش حوالين الأرض. راقب كمان الفيروسات اللي بتنقلها زي تجعد الأوراق الصفراء.',
+    en:'Whitefly sits on the leaf underside. Hang yellow sticky traps (10 per feddan), spray insecticidal soap or neem oil every 5 days covering the underside, and clear surrounding weeds. Watch for the viruses it transmits, such as yellow leaf curl.'}},
+  {k:['سعر','أسعار','أبيع','لبيع','هبيع','السوق','price','sell','market'],a:{
+    ar:'سعر الطماطم النهارده ٩٨٠٠ جنيه للطن، طالع ٦.٤٪ عن الأسبوع اللي فات، والتوقع القصير إنه يزيد ٣–٥٪ الأسبوع الجاي. لو عندك تخزين مناسب، الاستنى ٤–٥ أيام غالبًا أفضل.',
+    en:'Tomato is at 9,800 EGP per ton today, up 6.4% week-on-week, and the short-term forecast points to another 3–5% next week. With suitable storage, waiting 4–5 days is likely the better call.'}},
+  {k:['ملوحة','تربة','أرض','soil','salin','ec'],a:{
+    ar:'لو ظهر احتراق على أطراف الأوراق مع تقزم، اعمل تحليل تربة لقياس الـ EC. الحل السريع رية غسيل غزيرة مع تحسين الصرف، وبعدها ضيف مادة عضوية (كمبوست ٤–٦ م³ للفدان).',
+    en:'Leaf-edge burn with stunted growth calls for an EC soil test. The quick fix is a heavy leaching irrigation plus better drainage, followed by 4–6 m³ of compost per feddan.'}},
+  {k:['الجو','طقس','مطر','حرارة','weather','rain','temperature'],a:{
+    ar:'توقعات الأسبوع: ٢٩–٣٤ درجة نهارًا، رطوبة حوالين ٥٥٪، واحتمال مطر خفيف يوم الخميس. الحرارة مع الرطوبة دي بتزوّد خطر الأمراض الفطرية — راقب الأوراق السفلية وقلل الري بالرش.',
+    en:'This week: 29–34 °C by day, humidity around 55%, light rain possible on Thursday. That combination raises fungal disease risk — watch the lower leaves and reduce overhead irrigation.'}},
+  {k:['جرعة','مبيد','رش','dose','spray','pesticide'],a:{
+    ar:'التزم بالجرعة المكتوبة على العبوة ومتزودهاش. رش في الصباح الباكر أو قبل المغرب والرياح تحت ١٥ كم/س، وغيّر المجموعة الكيماوية كل رشتين، والتزم بفترة الأمان قبل الحصاد (٧–١٤ يوم).',
+    en:'Stick to the label rate. Spray early morning or before sunset with wind under 15 km/h, rotate the chemical group every two applications, and respect the pre-harvest interval (7–14 days).'}},
+  {k:['اصفرار','صفرا','أصفر','yellow','chloros'],a:{
+    ar:'اصفرار الأوراق القديمة الأول غالبًا نقص نيتروجين. اصفرار الأوراق الحديثة مع بقاء العروق خضرا = نقص حديد. أما لو الاصفرار مع ذبول من ناحية واحدة، شك في الفيوزاريوم واعزل النبات فورًا.',
+    en:'Yellowing on older leaves usually means nitrogen deficiency; on young leaves with green veins it means iron deficiency. Yellowing with one-sided wilting suggests fusarium — isolate the plant.'}}
+];
+
+const PRICES = [
+  {id:'tomato',name:{ar:'طماطم',en:'Tomato'},today:9800,chg:6.4,fc:4.2,week:[9100,9150,9280,9350,9520,9640,9800]},
+  {id:'potato',name:{ar:'بطاطس',en:'Potato'},today:7250,chg:-2.1,fc:-1.4,week:[7480,7430,7390,7350,7300,7280,7250]},
+  {id:'wheat', name:{ar:'قمح',en:'Wheat'},   today:12500,chg:1.2,fc:0.6,week:[12340,12360,12400,12380,12440,12470,12500]},
+  {id:'maize', name:{ar:'ذرة',en:'Maize'},   today:9150,chg:0.8,fc:2.3,week:[9080,9060,9090,9110,9100,9130,9150]},
+  {id:'citrus',name:{ar:'موالح',en:'Citrus'},today:6400,chg:-3.5,fc:-2.0,week:[6630,6600,6540,6510,6470,6420,6400]},
+  {id:'grape', name:{ar:'عنب',en:'Grapes'},  today:18200,chg:4.0,fc:3.1,week:[17500,17600,17750,17900,18000,18100,18200]}
+];
+
+const OFFERS = [
+  {buyer:{ar:'شركة الدلتا للتصدير',en:'Delta Export Co.'},crop:{ar:'طماطم',en:'Tomato'},grade:'A',price:10200,tons:25,loc:{ar:'الإسكندرية',en:'Alexandria'}},
+  {buyer:{ar:'مصنع وادي النيل للعصائر',en:'Nile Valley Juices'},crop:{ar:'طماطم',en:'Tomato'},grade:'B',price:8600,tons:60,loc:{ar:'طنطا',en:'Tanta'}},
+  {buyer:{ar:'سلسلة أسواق البركة',en:'Al-Baraka Markets'},crop:{ar:'بطاطس',en:'Potato'},grade:'A',price:7600,tons:18,loc:{ar:'القاهرة',en:'Cairo'}},
+  {buyer:{ar:'مؤسسة الصعيد للحبوب',en:'Upper Egypt Grains'},crop:{ar:'قمح',en:'Wheat'},grade:'A',price:12900,tons:40,loc:{ar:'المنيا',en:'Minya'}}
+];
+
+const WEEK = [
+  {d:{ar:'الأحد',en:'Sun'},mm:38,n:{ar:'الرية الأساسية — بعد المغرب',en:'Main round — after sunset'}},
+  {d:{ar:'الاتنين',en:'Mon'},mm:0,n:{ar:'التربة لسه محتفظة بالرطوبة',en:'Soil still holds moisture'}},
+  {d:{ar:'التلات',en:'Tue'},mm:26,n:{ar:'رية خفيفة صباحًا',en:'Light morning round'}},
+  {d:{ar:'الأربع',en:'Wed'},mm:0,n:{ar:'مطر متوقع ٦ مم',en:'6 mm of rain expected'}},
+  {d:{ar:'الخميس',en:'Thu'},mm:34,n:{ar:'تعويض بعد المطر',en:'Top-up after the rain'}},
+  {d:{ar:'الجمعة',en:'Fri'},mm:0,n:{ar:'راحة',en:'Rest day'}},
+  {d:{ar:'السبت',en:'Sat'},mm:40,n:{ar:'موجة حر متوقعة',en:'Heat wave expected'}}
+];
+
+const YIELDS = [['2021',8.4,0],['2022',9.1,0],['2023',8.8,0],['2024',9.6,0],['2025',10.2,0],['2026',11.3,1]];
+
+const MODULES = [
+  {ar:'تشخيص أمراض النبات — رؤية حاسوبية (CNN)',en:'Plant disease diagnosis — computer vision (CNN)'},
+  {ar:'مساعد محادثة بالعربي — نموذج لغوي + قاعدة معرفة',en:'Arabic conversational assistant — LLM + knowledge base'},
+  {ar:'توقّع المحصول وجدولة الري — تحليلات تنبؤية',en:'Yield prediction & irrigation scheduling — predictive analytics'},
+  {ar:'توقّع الأسعار والسوق الذكي',en:'Price forecasting & smart marketplace'}
+];
+const STACK = [
+  {ar:'الواجهة: Flutter',en:'App: Flutter'},{ar:'الخادم: Python / FastAPI',en:'Backend: Python / FastAPI'},
+  {ar:'الرؤية: PyTorch — ResNet',en:'Vision: PyTorch — ResNet'},{ar:'المحادثة: LLM + RAG',en:'NLP: LLM + RAG'},
+  {ar:'البيانات: PostgreSQL',en:'Data: PostgreSQL'},{ar:'مصادر: طقس وأقمار صناعية',en:'External: weather & satellite'}
+];
+
+/* ============================ STATE ============================ */
+const S = {
+  lang:'ar', dark:false, screen:'onb', tab:0, crop:CROPS[0], photo:false, analyzing:false, step:0,
+  result:null, saved:false, expert:false, history:[], msgs:[], typing:false, marketTab:0, sheet:false
+};
+const t = k => (T[S.lang][k] || k);
+const tf = (k,o) => { let s=t(k); for(const p in o) s=s.replaceAll('{'+p+'}',o[p]); return s; };
+const L = o => o[S.lang] || o.en;
+const SEV = ['sev.low','sev.medium','sev.high'];
+const SEVC = ['#4CAF50','#E08E0B','#D24B3E'];
+
+/* ============================ HELPERS ============================ */
+const leafSVG = (spots=true) => `
+<svg viewBox="0 0 100 130" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;display:block;background:${S.dark?'#121915':'#EDF4EA'}">
+  <defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#5FBF62"/><stop offset="1" stop-color="#2E8B4A"/></linearGradient></defs>
+  <path d="M50 8 C96 34 94 99 50 125 C6 99 4 34 50 8 Z" fill="url(#lg)"/>
+  <path d="M50 12 L50 121" stroke="rgba(255,255,255,.45)" stroke-width="1.4" stroke-linecap="round"/>
+  ${[26,40,54,68,82,96].map(y=>`
+    <path d="M50 ${y} Q34 ${y-3} 18 ${y+7}" stroke="rgba(255,255,255,.4)" stroke-width="1.1" fill="none"/>
+    <path d="M50 ${y} Q66 ${y-3} 82 ${y+7}" stroke="rgba(255,255,255,.4)" stroke-width="1.1" fill="none"/>`).join('')}
+  ${spots?[[40,42,6],[60,62,8],[44,82,5],[57,97,4],[36,63,3.4]].map(s=>`
+    <circle cx="${s[0]}" cy="${s[1]}" r="${s[2]*1.5}" fill="#D9B44A" opacity=".45"/>
+    <circle cx="${s[0]}" cy="${s[1]}" r="${s[2]}" fill="#7A4A22" opacity=".85"/>
+    <circle cx="${s[0]}" cy="${s[1]}" r="${s[2]*.55}" fill="none" stroke="#4A2A12" stroke-width=".8"/>`).join(''):''}
+</svg>`;
+
+function spark(vals,color,h=54){
+  const w=260, mn=Math.min(...vals), mx=Math.max(...vals), sp=(mx-mn)||1;
+  const pts=vals.map((v,i)=>[i*w/(vals.length-1), h*0.9 - ((v-mn)/sp)*h*0.72]);
+  const line=pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+  const area=`0,${h} `+line+` ${w},${h}`;
+  const id='g'+Math.random().toString(36).slice(2,7);
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="width:100%;height:${h}px;display:block">
+    <defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="${color}" stop-opacity=".30"/><stop offset="1" stop-color="${color}" stop-opacity="0"/>
+    </linearGradient></defs>
+    <polygon points="${area}" fill="url(#${id})"/>
+    <polyline points="${line}" fill="none" stroke="${color}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+    <circle cx="${pts[pts.length-1][0]}" cy="${pts[pts.length-1][1]}" r="3.4" fill="${color}"/>
+  </svg>`;
+}
+
+const pill=(txt,color,ico='')=>`<span class="pill" style="background:${color}1F;color:${color}">${ico?ico+' ':''}${txt}</span>`;
+const pillF=(txt,color,ico='')=>`<span class="pill" style="background:${color};color:#fff">${ico?ico+' ':''}${txt}</span>`;
+
+function toast(msg){
+  const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('on');
+  clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('on'),2200);
+}
+
+/* ============================ SCREENS ============================ */
+function vOnboarding(){
+  return `
+  <div class="apbar"><div class="grow"></div>${langBtn()}</div>
+  <div class="row" style="gap:12px;margin-bottom:26px">
+    <div class="logo" style="width:52px;height:52px;border-radius:17px;font-size:25px">🌿</div>
+    <div class="col"><span class="b8" style="font-size:22px">${t('app.name')}</span>
+      <span class="muted" style="font-size:12.5px">${t('app.tagline')}</span></div>
+  </div>
+  <div style="height:190px;border-radius:26px;background:linear-gradient(135deg,rgba(27,138,75,.16),rgba(239,165,59,.14));
+       display:flex;align-items:center;justify-content:center">
+    <div style="width:118px;height:150px;border-radius:18px;overflow:hidden">${leafSVG(false)}</div>
+  </div>
+  <h2 style="font-size:26px;line-height:1.35;margin:26px 0 12px">${t('onb.title')}</h2>
+  <p class="muted lh" style="font-size:14.5px;margin:0 0 22px">${t('onb.subtitle')}</p>
+  ${['onb.f1','onb.f2','onb.f3','onb.f4'].map(k=>`
+    <div class="row" style="margin-bottom:12px;align-items:flex-start">
+      <div style="width:24px;height:24px;border-radius:8px;background:rgba(27,138,75,.12);color:var(--primary);
+           display:flex;align-items:center;justify-content:center;font-size:13px;flex:0 0 24px">✓</div>
+      <span class="fs14">${t(k)}</span></div>`).join('')}
+  <button class="btn p" style="margin-top:10px" onclick="go('home')">${t('onb.cta')} →</button>
+  <div style="height:10px"></div>`;
+}
+
+function vDashboard(){
+  const acts=[
+    ['💧','var(--sky)','badge.today','act.irrigate',3],
+    ['🌬️','var(--warning)','badge.now','act.spray',2],
+    ['📈','var(--primary)','badge.week','act.sell',4]
+  ];
+  return `
+  <div class="apbar">
+    <div class="logo" onclick="go('profile')" style="cursor:pointer">🌿</div>
+    <div class="col grow"><span class="b8" style="font-size:17px">${tf('dash.greeting',{name:L(FARMER)})}</span>
+      <span class="sub">${L(FARM)}</span></div>
+    ${langBtn()}
+  </div>
+
+  <div class="card">
+    <div class="row" style="gap:8px"><span>☀️</span><b class="fs14">${t('dash.weather')}</b></div>
+    <div class="statgrid">
+      <div><div class="sqicon" style="background:rgba(239,165,59,.12)">🌡️</div><div class="v">31°</div><div class="c">${t('dash.temp')}</div></div>
+      <div><div class="sqicon" style="background:rgba(46,134,193,.12)">💧</div><div class="v">58%</div><div class="c">${t('dash.humidity')}</div></div>
+      <div><div class="sqicon" style="background:rgba(27,138,75,.12)">🌬️</div><div class="v">24 km/h</div><div class="c">${t('dash.wind')}</div></div>
+      <div><div class="sqicon" style="background:rgba(76,175,80,.12)">☁️</div><div class="v">15%</div><div class="c">${t('dash.rain')}</div></div>
+    </div>
+  </div>
+
+  <div class="sect">${t('dash.actions')}</div>
+  ${acts.map(a=>`
+    <div class="card tap" style="border-color:${a[1]}59" onclick="setTab(${a[4]})">
+      <div class="row" style="align-items:flex-start">
+        <div class="sqicon" style="background:${a[1]}1F">${a[0]}</div>
+        <div class="grow">
+          <div class="row"><b class="grow fs14">${t(a[3]+'.title')}</b>${pill(t(a[2]),a[1])}</div>
+          <div class="muted fs13 lh" style="margin-top:6px">${t(a[3]+'.body')}</div>
+        </div>
+      </div>
+    </div>`).join('')}
+
+  <div class="sect">${t('dash.quick')}</div>
+  <div class="quick">
+    ${[['🔍','var(--primary)','nav.diagnose',1],['💬','var(--sky)','nav.assistant',2],
+       ['📊','var(--sun)','nav.insights',3],['🏪','var(--leaf)','nav.market',4]].map(q=>`
+      <div class="card tap" onclick="setTab(${q[3]})">
+        <div class="sqicon" style="background:${q[1]}1F">${q[0]}</div><b class="fs13">${t(q[2])}</b></div>`).join('')}
+  </div>
+
+  <div class="sect">${t('dash.recent')}</div>
+  ${S.history.length===0 ? `
+    <div class="card tap" onclick="setTab(1)"><div class="row"><span>📷</span>
+      <span class="muted fs13">${t('dash.empty')}</span></div></div>` :
+    S.history.slice(0,3).map(h=>`
+      <div class="card"><div class="row">
+        <div style="width:44px;height:44px;border-radius:12px;overflow:hidden;flex:0 0 44px">${leafSVG()}</div>
+        <div class="col grow"><b class="fs14">${L(h.dis.name)}</b>
+          <span class="muted fs12">${L(h.crop.name)} · ${h.time}</span></div>
+        ${pill(Math.round(h.dis.conf*100)+'%',SEVC[h.dis.sev])}
+      </div></div>`).join('')}
+
+  <div class="sect">${t('dash.market')}<button onclick="setTab(4)">${t('dash.viewAll')}</button></div>
+  <div class="card" style="padding:6px 16px">
+    ${PRICES.slice(0,3).map(p=>{const up=p.chg>=0,c=up?'#1B8A4B':'#D24B3E';return `
+      <div class="row" style="padding:12px 0">
+        <b class="fs13" style="width:64px;flex:0 0 64px">${L(p.name)}</b>
+        <div class="grow" style="min-width:0">${spark(p.week,c,34)}</div>
+        <div class="col" style="text-align:${S.lang==='ar'?'left':'right'}">
+          <b class="fs13">${p.today.toLocaleString('en-US')}</b>
+          <span class="b7" style="font-size:11.5px;color:${c}">${up?'+':''}${p.chg.toFixed(1)}%</span></div>
+      </div>`}).join('')}
+  </div>`;
+}
+
+function vDiagnose(){
+  const steps=[t('diag.s1'),t('diag.s2'),t('diag.s3')];
+  return `
+  <div class="apbar"><h1>${t('diag.title')}</h1>${langBtn()}</div>
+  <b class="fs14">${t('diag.crop')}</b>
+  <div class="chips" style="margin-top:12px">
+    ${CROPS.map(c=>`<button class="chip ${c.id===S.crop.id?'on':''}" onclick="pickCrop('${c.id}')">
+      <span>${c.emoji}</span>${L(c.name)}</button>`).join('')}
+  </div>
+
+  <div class="frame ${S.photo?'on':''}" style="margin-top:18px">
+    ${S.photo?`${leafSVG()}
+      ${S.analyzing?'<div class="overlay"></div>':''}
+      <div class="cap">${pillF(S.crop.emoji+' '+L(S.crop.name),'#0E5C31')}${pillF('IMG_2041.jpg','rgba(0,0,0,.45)')}</div>`
+      :`<div class="ph">🔍</div><div class="muted fs14 b7" style="text-align:center;padding:0 30px">${t('diag.capture')}</div>`}
+  </div>
+
+  ${S.analyzing?`
+    <div class="card steps" style="border-color:rgba(27,138,75,.35)">
+      ${steps.map((s,i)=>`<div>
+        <span class="dot ${i<S.step?'done':(i===S.step?'act':'')}"></span>
+        <span class="${i<=S.step?'b7':'muted'}">${s}</span></div>`).join('')}
+    </div>`
+  : S.photo?`
+    <button class="btn p" onclick="analyze()">✨ ${t('diag.analyze')}</button>
+    <button class="btn o" style="border:none;margin-top:6px" onclick="setPhoto(false)">${t('diag.retake')}</button>`
+  :`<div class="btnrow">
+      <button class="btn p" onclick="setPhoto(true)">📷 ${t('diag.camera')}</button>
+      <button class="btn o" onclick="setPhoto(true)">🖼️ ${t('diag.gallery')}</button>
+    </div>`}
+
+  <div class="sect" style="margin-bottom:0"></div>
+  <div class="card">
+    <div class="row" style="gap:8px;margin-bottom:12px"><span>💡</span><b class="fs14">${t('diag.tips')}</b></div>
+    ${['diag.tip1','diag.tip2','diag.tip3'].map(k=>`
+      <div class="row" style="align-items:flex-start;margin-bottom:9px">
+        <span style="width:5px;height:5px;border-radius:50%;background:var(--primary);margin-top:8px;flex:0 0 5px"></span>
+        <span class="muted fs13">${t(k)}</span></div>`).join('')}
+  </div>
+  <div class="row muted" style="font-size:11.5px;align-items:flex-start"><span>ℹ️</span><span>${t('diag.demoNote')}</span></div>`;
+}
+
+function vResult(){
+  const d=S.result, low=d.conf<0.70, cc=low?'#E08E0B':'#1B8A4B';
+  return `
+  <div class="apbar"><button class="iconbtn" onclick="go('home')">${S.lang==='ar'?'→':'←'}</button><h1>${t('res.title')}</h1></div>
+  <div style="height:200px;border-radius:22px;overflow:hidden;position:relative">
+    ${leafSVG()}
+    <div style="position:absolute;inset-inline:0;bottom:0;padding:40px 16px 14px;display:flex;gap:8px;
+         background:linear-gradient(transparent,rgba(0,0,0,.7))">
+      ${pillF(S.crop.emoji+' '+L(S.crop.name),'rgba(255,255,255,.22)')}
+      ${pillF('⚠ '+t(SEV[d.sev]),SEVC[d.sev])}
+    </div>
+  </div>
+  <h2 style="font-size:22px;margin:18px 0 4px">${L(d.name)}</h2>
+  <div class="muted" style="font-size:13;font-style:italic;margin-bottom:18px">${d.sci}</div>
+
+  <div class="card">
+    <div class="row"><span class="grow muted fs13 b7">${t('res.confidence')}</span>
+      <b style="font-size:18px;color:${cc}">${Math.round(d.conf*100)}%</b></div>
+    <div class="bar" style="margin-top:10px;background:${cc}26"><i style="width:${d.conf*100}%;background:${cc}"></i></div>
+  </div>
+
+  ${low?`<div class="card" style="border-color:rgba(224,142,11,.5)">
+    <div class="row" style="gap:8px"><span>❓</span><b class="fs14">${t('res.lowTitle')}</b></div>
+    <div class="muted fs13 lh" style="margin:8px 0 12px">${t('res.lowBody')}</div>
+    <button class="btn w" ${S.expert?'disabled':''} onclick="expert()">
+      ${S.expert?'✓ '+t('res.expertSent'):'🧑‍🌾 '+t('res.expert')}</button>
+  </div>`:''}
+
+  <div class="sect">${t('res.about')}</div>
+  <div class="card"><div class="muted fs13 lh">${L(d.sum)}</div></div>
+
+  <div class="sect">${t('res.treatment')}</div>
+  <div class="card">
+    ${d.tr.map((s,i)=>`<div class="row" style="align-items:flex-start;margin-bottom:${i===d.tr.length-1?0:14}px">
+      <span class="num">${i+1}</span><span class="fs13 lh">${L(s)}</span></div>`).join('')}
+  </div>
+
+  <div class="sect">${t('res.prevention')}</div>
+  <div class="card">
+    ${d.pr.map(s=>`<div class="row" style="align-items:flex-start;margin-bottom:12px">
+      <span style="color:var(--leaf)">🛡️</span><span class="muted fs13 lh">${L(s)}</span></div>`).join('')}
+  </div>
+
+  <button class="btn p" ${S.saved?'disabled':''} onclick="saveResult()">
+    ${S.saved?'✓ '+t('res.saved'):'🔖 '+t('res.save')}</button>
+  <div style="height:10px"></div>
+  <button class="btn o" onclick="askAboutResult()">💬 ${t('res.ask')}</button>`;
+}
+
+function vAssistant(){
+  const empty=S.msgs.length===0;
+  return `
+  <div class="apbar">
+    <div class="col grow"><span class="b8" style="font-size:17px">${t('asst.title')}</span>
+      <span class="sub">${t('asst.subtitle')}</span></div>
+    ${empty?'':`<button class="iconbtn" onclick="clearChat()">🗑️</button>`}
+    ${langBtn()}
+  </div>
+  <div class="bubble bot"><div class="who">🤖 ${t('app.name')}</div>${t('asst.greeting')}</div>
+  ${S.msgs.map(m=>m.me
+    ? `<div class="bubble me">${m.text}</div>`
+    : `<div class="bubble bot"><div class="who">🤖 ${t('app.name')}</div>${m.text}
+        ${m.esc?`<button class="btn o" style="margin-top:12px;padding:10px;color:var(--sky);border-color:var(--sky)"
+          onclick="toast(t('res.expertSent'))">🧑‍🌾 ${t('asst.escalate')}</button>`:''}</div>`).join('')}
+  ${S.typing?`<div class="bubble bot"><span class="muted fs12">⏳ ${t('asst.typing')}</span></div>`:''}
+  ${empty?`<div class="muted b7" style="font-size:12.5px;margin-top:8px">${t('asst.suggest')}</div>
+    <div class="sugg">${['asst.q1','asst.q2','asst.q3','asst.q4'].map(k=>
+      `<button onclick="send(this.textContent)">${t(k)}</button>`).join('')}</div>`:''}
+  <div style="height:6px"></div>`;
+}
+
+function vInsights(){
+  const total=WEEK.reduce((s,d)=>s+d.mm,0), mx=Math.max(...YIELDS.map(y=>y[1]));
+  return `
+  <div class="apbar"><h1>${t('ins.title')}</h1>${langBtn()}</div>
+  <div class="card" style="padding:18px">
+    <div class="row"><span class="grow muted fs14 b7">${t('ins.yield')}</span>${pill('📅 '+t('ins.season'),'#1B8A4B')}</div>
+    <div class="row" style="align-items:flex-end;gap:8px;margin:14px 0">
+      <span style="font-size:44px;font-weight:800;line-height:1">11.3</span>
+      <span class="muted fs13 b7" style="padding-bottom:6px">${t('ins.unit')}</span>
+    </div>
+    <div class="muted fs13">${tf('ins.range',{a:'10.4',b:'12.1'})}</div>
+    <div class="row" style="margin-top:12px">
+      <div class="bar grow"><i style="width:86%;background:var(--primary)"></i></div>
+      <b style="font-size:12px;color:var(--primary)">86% ${t('res.confidence')}</b>
+    </div>
+  </div>
+
+  <div class="sect">${t('ins.history')}</div>
+  <div class="card" style="padding:18px 10px 14px">
+    <div class="bars">
+      ${YIELDS.map(y=>`<div class="b">
+        <span class="v" style="color:${y[2]?'var(--sun)':'var(--strong)'}">${y[1].toFixed(1)}</span>
+        <span class="fill" style="height:${(y[1]/mx*100)*0.78}%;background:linear-gradient(${y[2]?'#EFA53B,#EFA53B8C':'#1B8A4B,#1B8A4B8C'})"></span>
+        <span class="l" style="color:${y[2]?'var(--sun)':'var(--subtle)'};font-weight:${y[2]?700:500}">${y[0]}</span>
+      </div>`).join('')}
+    </div>
+  </div>
+
+  <div class="sect">${t('ins.irrigation')}</div>
+  <div class="card" style="border-color:rgba(46,134,193,.4)">
+    <div class="row">
+      <div class="sqicon" style="background:rgba(46,134,193,.13);width:46px;height:46px;border-radius:15px">💧</div>
+      <div class="col grow"><span class="muted fs12">${t('ins.next')}</span><b style="font-size:15px">${t('ins.tonight')}</b></div>
+      <b style="font-size:17px;color:var(--sky)">38 ${t('ins.mm')}</b>
+    </div>
+  </div>
+  <div class="card" style="padding:8px 16px">
+    ${WEEK.map(d=>`<div class="row" style="padding:11px 0">
+      <b class="fs13" style="width:56px;flex:0 0 56px;${d.mm===0?'color:var(--subtle)':''}">${L(d.d)}</b>
+      <span class="grow muted" style="font-size:12.5px">${L(d.n)}</span>
+      ${d.mm===0?pill(t('ins.skip'),'#5D6B62'):pill(d.mm+' '+t('ins.mm'),'#2E86C1')}
+    </div>`).join('')}
+  </div>
+  <div class="quick">
+    <div class="card" style="text-align:center;padding:16px 8px">
+      <b style="font-size:20px">${total} ${t('ins.mm')}</b>
+      <div class="muted" style="font-size:11.5px;margin-top:4px">${t('ins.weekWater')}</div></div>
+    <div class="card" style="text-align:center;padding:16px 8px">
+      <b style="font-size:20px;color:var(--primary)">−18%</b>
+      <div class="muted" style="font-size:11.5px;margin-top:4px">${t('ins.savedWater')}</div></div>
+  </div>
+  <div class="row muted" style="font-size:11.5px;align-items:flex-start;margin-top:14px">
+    <span>🛰️</span><span class="lh">${t('ins.note')}</span></div>`;
+}
+
+function vMarket(){
+  return `
+  <div class="apbar"><h1>${t('mkt.title')}</h1>${langBtn()}</div>
+  <div class="segs">
+    <button class="${S.marketTab===0?'on':''}" onclick="setMarketTab(0)">${t('mkt.prices')}</button>
+    <button class="${S.marketTab===1?'on':''}" onclick="setMarketTab(1)">${t('mkt.offers')}</button>
+  </div>
+  ${S.marketTab===0?PRICES.map(p=>{
+    const up=p.chg>=0,c=up?'#1B8A4B':'#D24B3E',hold=p.fc>1.0,hc=hold?'#EFA53B':'#1B8A4B';
+    const crop=CROPS.find(x=>x.id===p.id);
+    return `<div class="card">
+      <div class="row">
+        <div class="sqicon" style="background:${crop.color}1F;width:38px;height:38px;border-radius:12px">${crop.emoji}</div>
+        <div class="col grow"><b style="font-size:15px">${L(p.name)}</b><span class="muted" style="font-size:11.5px">${t('mkt.today')}</span></div>
+        <div class="col" style="text-align:${S.lang==='ar'?'left':'right'}">
+          <b style="font-size:18px">${p.today.toLocaleString('en-US')}</b>
+          <span class="muted" style="font-size:10.5px">${t('mkt.perTon')}</span></div>
+      </div>
+      <div style="margin:12px 0">${spark(p.week,c,54)}</div>
+      <div class="row" style="gap:8px;flex-wrap:wrap">
+        ${pill(t('mkt.trend')+' '+(up?'+':'')+p.chg.toFixed(1)+'%',c,up?'📈':'📉')}
+        ${pill(t('mkt.forecast')+' '+(p.fc>=0?'+':'')+p.fc.toFixed(1)+'%',p.fc>=0?'#1B8A4B':'#D24B3E','🔮')}
+      </div>
+      <div class="row" style="margin-top:12px;padding:10px 12px;border-radius:12px;background:${hc}1A">
+        <b style="font-size:12.5px;color:${hc}">${hold?'⏳ '+t('mkt.hold'):'🏷️ '+t('mkt.sell')}</b>
+      </div>
+    </div>`}).join('')
+  :`<div class="card tap" style="border-color:rgba(239,165,59,.5)" onclick="toast(t('common.soon'))">
+      <div class="row" style="align-items:flex-start">
+        <div class="sqicon" style="background:rgba(239,165,59,.14)">📸</div>
+        <div class="grow"><b class="fs14">${t('mkt.gradeCta')}</b>
+          <div class="muted fs13 lh" style="margin-top:6px">${t('mkt.gradeBody')}</div></div>
+      </div></div>
+    <div class="sect">${t('mkt.openOffers')}</div>
+    ${OFFERS.map(o=>`<div class="card">
+      <div class="row">
+        <div class="sqicon" style="background:rgba(27,138,75,.12);width:40px;height:40px;border-radius:13px">🏪</div>
+        <div class="col grow"><b class="fs14">${L(o.buyer)}</b>
+          <span class="muted fs12">${L(o.crop)} · ${L(o.loc)}</span></div>
+        ${pill(t('mkt.grade')+' '+o.grade,o.grade==='A'?'#1B8A4B':'#E08E0B')}
+      </div>
+      <div class="row" style="margin:14px 0;text-align:center">
+        <div class="grow"><b style="font-size:15px">${o.price.toLocaleString('en-US')}</b>
+          <div class="muted" style="font-size:11px">${t('mkt.perTon')}</div></div>
+        <div style="width:1px;height:30px;background:var(--border)"></div>
+        <div class="grow"><b style="font-size:15px">${o.tons} ${t('mkt.ton')}</b>
+          <div class="muted" style="font-size:11px">${t('mkt.qty')}</div></div>
+      </div>
+      <button class="btn o" style="padding:12px" onclick="toast(t('common.soon'))">💬 ${t('mkt.contact')}</button>
+    </div>`).join('')}`}`;
+}
+
+function vProfile(){
+  return `
+  <div class="apbar"><button class="iconbtn" onclick="go('home')">${S.lang==='ar'?'→':'←'}</button><h1>${t('prof.title')}</h1></div>
+  <div class="card" style="padding:18px">
+    <div class="row">
+      <div class="sqicon" style="width:58px;height:58px;border-radius:20px;background:rgba(27,138,75,.12);font-size:26px">👨‍🌾</div>
+      <div class="col grow"><b style="font-size:18px">${L(FARMER)}</b><span class="muted fs12">${L(FARM)}</span></div>
+      ${pill('✓ '+t('prof.farmer'),'#1B8A4B')}
+    </div>
+  </div>
+  <div class="sect">${t('prof.settings')}</div>
+  <div class="card">
+    <div class="row" style="padding:6px 0"><span>🌐</span><b class="grow fs14">${t('prof.language')}</b>
+      <button class="langbtn" onclick="switchLang()">${S.lang==='ar'?'العربية':'English'}</button></div>
+    <div style="height:1px;background:var(--border);margin:10px 0"></div>
+    <div class="row" style="padding:6px 0"><span>🌙</span><b class="grow fs14">${t('prof.theme')}</b>
+      <label style="cursor:pointer">
+        <input type="checkbox" ${S.dark?'checked':''} onchange="toggleDark()" style="width:44px;height:26px;accent-color:#1B8A4B">
+      </label></div>
+  </div>
+  <div class="sect">${t('prof.history')}</div>
+  ${S.history.length===0?`<div class="card muted fs13">${t('dash.empty')}</div>`:
+    S.history.map(h=>`<div class="card"><div class="row">
+      <span>${h.crop.emoji}</span><b class="grow fs14">${L(h.dis.name)}</b>
+      ${pill(Math.round(h.dis.conf*100)+'%',SEVC[h.dis.sev])}</div></div>`).join('')}
+  <div class="sect">${t('prof.about')}</div>
+  <div class="card">
+    <div class="row"><div class="logo" style="width:38px;height:38px;border-radius:12px;font-size:18px">🌿</div>
+      <b class="grow fs14">${t('app.name')}</b><span class="muted" style="font-size:11.5px">${t('prof.version')} 1.0.0</span></div>
+    <div class="muted fs13 lh" style="margin:14px 0 18px">${t('prof.aboutBody')}</div>
+    <b class="fs13">${t('prof.modules')}</b>
+    <div style="margin-top:10px">${MODULES.map(m=>`
+      <div class="row" style="align-items:flex-start;margin-bottom:9px">
+        <span style="color:var(--primary)">✓</span><span class="muted" style="font-size:12.5px">${L(m)}</span></div>`).join('')}</div>
+    <b class="fs13">${t('prof.stack')}</b>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">
+      ${STACK.map(s=>`<span style="background:var(--chip);border-radius:10px;padding:7px 11px;font-size:11.5px" class="muted">${L(s)}</span>`).join('')}
+    </div>
+  </div>
+  <div class="row muted" style="font-size:11.5px;align-items:flex-start"><span>ℹ️</span><span>${t('common.demo')}</span></div>`;
+}
+
+const langBtn=()=>`<button class="langbtn" onclick="switchLang()">🌐 ${t('common.switchLang')}</button>`;
+
+/* ============================ NAV / RENDER ============================ */
+const ICONS=[
+  '<path d="M3 11 12 3l9 8v10h-6v-6H9v6H3z"/>',
+  '<path d="M4 8V4h4M20 8V4h-4M4 16v4h4M20 16v4h-4"/><circle cx="12" cy="12" r="3.2"/>',
+  '<path d="M21 12a8 8 0 0 1-8 8H4l2-3a8 8 0 1 1 15-5z"/>',
+  '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  '<path d="M4 9h16v11H4z"/><path d="M3 9l2-5h14l2 5"/><path d="M9 20v-6h6v6"/>'
+];
+
+function render(){
+  document.documentElement.lang=S.lang;
+  document.documentElement.dir = S.lang==='ar'?'rtl':'ltr';
+  document.getElementById('phone').classList.toggle('dark',S.dark);
+  document.body.classList.toggle('dark-page',S.dark);
+
+  const views={onb:vOnboarding,home:vDashboard,diag:vDiagnose,res:vResult,asst:vAssistant,ins:vInsights,mkt:vMarket,profile:vProfile};
+  let key=S.screen;
+  if(key==='home') key=['home','diag','asst','ins','mkt'][S.tab];
+  document.getElementById('screen').innerHTML=views[key]();
+
+  // composer only on assistant tab
+  document.getElementById('composer').innerHTML = (key==='asst')?`
+    <div class="composer">
+      <button class="cbtn mic" onclick="voice()">🎙️</button>
+      <input id="inp" placeholder="${t('asst.hint')}" onkeydown="if(event.key==='Enter')sendInput()"/>
+      <button class="cbtn send" onclick="sendInput()">➤</button>
+    </div>`:'';
+
+  // tab bar
+  const bar=document.getElementById('tabbar');
+  if(S.screen==='onb'||S.screen==='res'||S.screen==='profile'){ bar.style.display='none'; }
+  else{
+    bar.style.display='flex';
+    bar.innerHTML=['nav.home','nav.diagnose','nav.assistant','nav.insights','nav.market'].map((k,i)=>`
+      <button class="${S.tab===i?'on':''}" onclick="setTab(${i})">
+        <span class="ind"><svg viewBox="0 0 24 24">${ICONS[i]}</svg></span>${t(k)}</button>`).join('');
+  }
+  document.getElementById('sheet').innerHTML = S.sheet?`
+    <div class="sheet"><div>
+      <div class="mic">🎙️</div>
+      <b style="font-size:16px">${t('asst.listening')}</b>
+      <div class="muted fs12" style="margin-top:6px">${t('asst.voiceNote')}</div>
+      <div class="prog"><i></i></div>
+    </div></div>`:'';
+  if(key==='asst') document.getElementById('screen').scrollTop=9e5;
+}
+
+function go(s){ S.screen=s; if(s==='home')S.tab=0; render(); }
+function setTab(i){ S.screen='home'; S.tab=i; render(); }
+function setMarketTab(i){ S.marketTab=i; render(); }
+function switchLang(){ S.lang = S.lang==='ar'?'en':'ar'; render(); }
+function toggleDark(){ S.dark=!S.dark; render(); }
+function pickCrop(id){ S.crop=CROPS.find(c=>c.id===id); render(); }
+function setPhoto(v){ S.photo=v; render(); }
+
+function analyze(){
+  S.analyzing=true; S.step=0; render();
+  const tick=()=>{ if(S.step>=2){ S.analyzing=false; S.photo=false;
+      S.result=DISEASES[S.crop.id]; S.saved=false; S.expert=false; S.screen='res'; render(); }
+    else { S.step++; render(); setTimeout(tick,750);} };
+  setTimeout(tick,750);
+}
+function saveResult(){
+  const now=new Date(), hh=String(now.getHours()).padStart(2,'0'), mm=String(now.getMinutes()).padStart(2,'0');
+  S.history.unshift({crop:S.crop,dis:S.result,time:hh+':'+mm}); S.saved=true; render(); toast(t('res.saved'));
+}
+function expert(){ S.expert=true; render(); toast(t('res.expertSent')); }
+function askAboutResult(){
+  const q = S.lang==='ar' ? 'إزاي أعالج '+L(S.result.name)+' في '+L(S.crop.name)+'؟'
+                          : 'How do I treat '+L(S.result.name)+' in '+L(S.crop.name)+'?';
+  S.screen='home'; S.tab=2; render(); send(q);
+}
+function clearChat(){ S.msgs=[]; render(); }
+function sendInput(){ const el=document.getElementById('inp'); if(el){ send(el.value); el.value=''; } }
+function send(text){
+  text=(text||'').trim(); if(!text) return;
+  S.msgs.push({me:true,text}); S.typing=true; render();
+  const lang=S.lang;
+  setTimeout(()=>{
+    const q=text.toLowerCase();
+    // short keywords ("ري") must match a whole word, else "أشتري" triggers them
+    const words=q.split(/[^\p{L}]+/u);
+    const match=(k)=>{k=k.toLowerCase();
+      return k.length>3 ? q.includes(k)
+        : words.some(w=>w===k||w==='ال'+k||w==='و'+k||w==='ب'+k||w==='لل'+k);};
+    const hit=KB.find(e=>e.k.some(match));
+    S.typing=false;
+    S.msgs.push({me:false,text:hit?hit.a[lang]:T[lang]['asst.escalateBody'],esc:!hit});
+    render();
+  },900);
+}
+function voice(){
+  S.sheet=true; render();
+  setTimeout(()=>{ S.sheet=false; render();
+    const el=document.getElementById('inp'); if(el){ el.value=t('asst.q1'); el.focus(); } },1800);
+}
+
+setInterval(()=>{ const d=new Date();
+  document.getElementById('clock').textContent = d.getHours()+':'+String(d.getMinutes()).padStart(2,'0'); },1000);
+render();
+</script>
+</body>
+</html>
